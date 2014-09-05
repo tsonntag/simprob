@@ -50,7 +50,7 @@
 (defn header [& args]
   (apply printf "%7s %-20s %-8s %7s %7s  %4s\n" args))
 
-(defn listener [n chosen n-occured n-all p]
+(defn console-listener [n chosen n-occured n-all p]
   (let [[choice accepted] chosen]
     (line
       n 
@@ -63,8 +63,8 @@
       p)))
 
 (defn run
-  "runs red-yellow n times"
-  [n]
-  (header "run" "" "accepted" "true" "all" "p")
-  (simprob/run #(>= % n) chooser listener))
+  "runs red-yellow n times on console"
+  ([n]
+   (header "run" "" "accepted" "true" "all" "p")
+   (simprob/run #(>= % n) chooser console-listener))
 
