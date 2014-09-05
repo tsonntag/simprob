@@ -1,4 +1,5 @@
-(ns simprob.ry.core)
+(ns simprob.ry.core
+  (require [simprob.core :as simprob]))
 
 (def pads [[:red :red] [:red :yellow] [:yellow :yellow]])
 
@@ -43,12 +44,27 @@
                    (if (= (bottom choice) color) 1 0))]
      [choice accepted]))
 
+(defn line [& args]
+  (apply printf "%7d %-20s %-8s %7d %7d  %4.3f\n" args))
+
+(defn header [& args]
+  (apply printf "%7s %-20s %-8s %7s %7s  %4s\n" args))
+
 (defn listener [n chosen n-occured n-all p]
   (let [[choice accepted] chosen]
-    (printf "%5d %s %1s %5d %5d   %4.3f\n" 
-            n
-            (choice-s choice)
-            (if (not (nil? accepted)) accepted "")
-            n-occured
-            n-all
-            p)))
+    (line
+      n 
+      (choice-s choice)
+      (if (not (nil? accepted)) 
+        (= accepted 0)
+        "")
+      n-occured
+      n-all
+      p)))
+
+(defn run
+  "runs red-yellow n times"
+  [n]
+  (header "run" "" "accepted" "true" "all" "p")
+  (simprob/run #(>= % n) chooser listener))
+
