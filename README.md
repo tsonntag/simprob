@@ -1,6 +1,6 @@
 # simprob
 
-Simulator for propability experiments
+Simulator for probability experiments
 
 ## Usage
 
