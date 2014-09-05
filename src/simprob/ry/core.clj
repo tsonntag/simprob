@@ -3,8 +3,6 @@
 
 (def pads [[:red :red] [:red :yellow] [:yellow :yellow]])
 
-(def color :yellow)
-
 (defn top
   "returns top of choice"
   [[pad i-top]]
@@ -35,14 +33,16 @@
    (repeatedly n choose)))
 
 (defn chooser 
-  "if top of choice is not color accepted is nil,
+  "Returns a chooser for color.
+   If top of choice is not color accepted is nil,
    else if bottom of choice is color accepted is 1 else 0
    returns [choice accepted]"
-  []
-  (let [choice   (choose)
-        accepted (when (= (top choice) color)
-                   (if (= (bottom choice) color) 1 0))]
-     [choice accepted]))
+  [color]
+  (fn []
+   (let [choice   (choose)
+         accepted (when (= (top choice) color)
+                    (if (= (bottom choice) color) 1 0))]
+      [choice accepted])))
 
 (defn line [& args]
   (apply printf "%7d %-20s %-8s %7d %7d  %4.3f\n" args))
@@ -50,9 +50,9 @@
 (defn header [& args]
   (apply printf "%7s %-20s %-8s %7s %7s  %4s\n" args))
 
-(defn console-listener [n chosen n-occured n-all p]
-  (let [[choice accepted] chosen]
-    (line
+(defn console-listener [{:keys [choice accepted n n-all n-occured p] :as state}]
+  ;(println "console-listener" state)
+   (line
       n 
       (choice-s choice)
       (if (not (nil? accepted)) 
@@ -60,11 +60,11 @@
         "")
       n-occured
       n-all
-      p)))
+      p))
 
 (defn run
   "runs red-yellow n times on console"
-  ([n]
+  [n]
    (header "run" "" "accepted" "true" "all" "p")
-   (simprob/run #(>= % n) chooser console-listener))
+   (simprob/run #(>= (:n %) n) (chooser :yellow) console-listener))
 

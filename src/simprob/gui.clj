@@ -3,42 +3,55 @@
     [seesaw.core :refer :all]))
  
 (defn watch-text [atom widget f]
-   (add-watch atom :widget (fn [_ _ _ state] (config! widget :text (f state)))))
+   (add-watch atom :widget (fn [_ _ _ state]
+                             (config! widget :text (f state)))))
  
 (def f (frame :title "Title" :on-close :exit))
  
 (defn show [] (-> f pack! show!))
 
-(def running?  (atom false))
+(def running?  (atom 0))
 (def n         (atom 0))
 (def n-all     (atom 0))
 (def n-occured (atom 0))
+(def p         (atom 0.0))
 
-(def run-button
+(def make-button [f] 
    (let [b (button)]
-       (listen b :action (fn [e] (swap! running? #(not %))))
+       (listen b :action f)
        b))
+
+(def run-button   (make-button (fn [e] (swap! running? #(not %)))))
+(def step-button  (make-button (fn [e] (swap! running? #(not %)))))
+
 (def n-label         (label))
 (def n-all-label     (label))
 (def n-occured-label (label))
+(def p-label         (label))
 -
 (watch-text running?  run-button      #(if % "Stop" "Start"))
 (watch-text n         n-label         identity)
 (watch-text n-all     n-all-label     identity)
 (watch-text n-occured n-occured-label identity)
+(watch-text p         p-label         identity)
 
-(reset! running?  false)
-(reset! n         0)
-(reset! n-all     0)
-(reset! n-occured 0)
+
+(defn reset []
+  (reset! running?  false)
+  (reset! n         0)
+  (reset! n-all     0)
+  (reset! n-occured 0)
+  (reset! n-occured 0)
+  (reset! p         0.0))
 
 (def result-panel
   (grid-panel
-    :rows 3
+    :rows 4
     :columns 2
-    :items [(label "Zuge:")       n-label
+    :items [(label "ZÜge:")       n-label
             (label "Ereignisse:") n-occured-label
-            (label "Von:")        n-all-label]))
+            (label "Von:")        n-all-label
+            (label "p:")          p-label]))
 
 
 (def left-panel "left")
@@ -50,6 +63,8 @@
 (def board (flow-panel :hgap 5 :vgap 5))
 
 (defn board! [& items] (config! board :items items))
+
+(reset)
 
 (display
   (border-panel
