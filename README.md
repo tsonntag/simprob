@@ -1,6 +1,6 @@
-# redyellow
+# simprop
 
-A Clojure library designed to ... well, that part is up to you.
+Simulator for propability experiments
 
 ## Usage
 
@@ -8,7 +8,7 @@ FIXME
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 Thomas Sonntag 
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
