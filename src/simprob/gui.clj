@@ -1,60 +1,42 @@
-(ns simprob.gui
-  (require
+(ns simprob.gui (require
+    [simprob.core :as core]
     [seesaw.core :refer :all]))
- 
-(defn watch-text [atom widget f]
-   (add-watch atom :widget (fn [_ _ _ state]
-                             (config! widget :text (f state)))))
  
 (def f (frame :title "Title" :on-close :exit))
  
 (defn show [] (-> f pack! show!))
 
-(def running?  (atom 0))
-(def n         (atom 0))
-(def n-all     (atom 0))
-(def n-occured (atom 0))
-(def p         (atom 0.0))
-
-(def make-button [f] 
-   (let [b (button)]
+(defn make-button [text f] 
+   (let [b (button :text text)]
        (listen b :action f)
        b))
 
-(def run-button   (make-button (fn [e] (swap! running? #(not %)))))
-(def step-button  (make-button (fn [e] (swap! running? #(not %)))))
+(def run-button   (make-button "Start"(fn [e] (swap! core/running? #(not %)))))
+(def step-button  (make-button "Step" (fn [e] #(core/next-state!))))
 
-(def n-label         (label))
-(def n-all-label     (label))
-(def n-occured-label (label))
-(def p-label         (label))
--
-(watch-text running?  run-button      #(if % "Stop" "Start"))
-(watch-text n         n-label         identity)
-(watch-text n-all     n-all-label     identity)
-(watch-text n-occured n-occured-label identity)
-(watch-text p         p-label         identity)
+(def labels {:n         (label)
+             :n-all     (label)
+             :n-occured (label)
+             :p         (label)})
 
+(add-watch running? :widget (fn [_ _ _ value]
+                              (config! step-button :enabled? (not value))
+                              (config! run-button  :text     (if value "Stop" "Start"))))
 
-(defn reset []
-  (reset! running?  false)
-  (reset! n         0)
-  (reset! n-all     0)
-  (reset! n-occured 0)
-  (reset! n-occured 0)
-  (reset! p         0.0))
+(add-watch state :widget
+           (fn [_ _ _ state]
+             (doseq [[key label] labels]
+               (config! label :text (key state)))))
 
 (def result-panel
   (grid-panel
     :rows 4
     :columns 2
-    :items [(label "ZÜge:")       n-label
-            (label "Ereignisse:") n-occured-label
-            (label "Von:")        n-all-label
-            (label "p:")          p-label]))
+    :items [(label "Step:")  (:n         labels)
+            (label "Event")  (:n-occured labels)
+            (label "Valid:") (:n-all     labels)
+            (label "p:")     (:p         labels)]))
 
-
-(def left-panel "left")
 
 (defn display [content]
    (config! f :content content)
@@ -63,8 +45,6 @@
 (def board (flow-panel :hgap 5 :vgap 5))
 
 (defn board! [& items] (config! board :items items))
-
-(reset)
 
 (display
   (border-panel
@@ -76,5 +56,5 @@
             :vgap 5
             :hgap 5
             :border 5
-            :north run-button
+            :north (flow-panel :items [step-button run-button])
             :center result-panel)))
