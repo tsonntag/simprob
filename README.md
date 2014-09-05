@@ -1,4 +1,4 @@
-# simprop
+# simprob
 
 Simulator for propability experiments
 
