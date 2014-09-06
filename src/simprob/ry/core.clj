@@ -45,15 +45,15 @@
       [choice accepted])))
 
 (defn line [{:keys [n n-all n-occured p choice accepted] :as state}]
-  (apply printf "%7d %-20s %-8s %7d %7d  %4.3f\n" 
+  (printf "%7d %-20s %-8s %7d %7d  %10.9f\n" 
      n 
      (choice-s choice)
      (if (not (nil? accepted)) 
-        (= accepted 0)
+        (= accepted 1)
         "")
      n-occured
      n-all
-     p))
+     p ))
 
 (defn header [& args]
   (apply printf "%7s %-20s %-8s %7s %7s  %4s\n" args))
@@ -63,9 +63,11 @@
   [n]
   (let [listener
          (fn [state]
-           (println "console-listener" state)
+    ;      (println "console-listener" state)
            (line state))
          simulation (simulation/create (chooser :yellow) listener)]
+    ;(println simulation)
     (dotimes [i n]  
-      (simulation/step! simulation))
+      (simulation/step! simulation))))
+
 

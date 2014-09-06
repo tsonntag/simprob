@@ -1,6 +1,6 @@
 (ns simprob.simulation)
 
-(defn create!
+(defn create
   "creates a simulation"
   [chooser listener]
   (let [state (atom
@@ -14,36 +14,40 @@
     :chooser chooser
     :listener listener}))
    
-(defn runnning?
+(defn running?
   "returns true if running"
-  [{keys: [state]} &args]
+  [{:keys [state]} &args]
   (:running state))
 
 (defn start!
   "starts a simulation"
-  [{keys: [state]} &args]
+  [{:keys [state]} &args]
   (swap! state :runnign true))
 
 (defn stop!
   "stops a simulation"
-  [{keys: [state]} &args]
+  [{:keys [state]} &args]
   (swap! state :runnign false))
 
 (defn step!
   "Performs a simulation step:
    Calls chooser. 
    Computes the propability"
-  [{keys: [choose state]}]
-  (let [{:keys [chooser n n-all n-occured n-all]} @state
-        [choice accepted]                         (chooser)
-        accepted?                                 (not (nil? accepted))]
+  [{:keys [chooser state]}]
+  (let [{:keys [n n-all n-occured n-all]} @state
+        [choice accepted]                 (chooser) 
+        accepted? (not (nil? accepted))
+        n         (inc n)
+        n-all     (if accepted? (inc n-all) n-all)
+        n-occured (if accepted? (+ n-occured accepted) n-occured)
+        p         (float (if (zero? n-all) 0 (/ n-occured n-all)))]
      (swap! state assoc 
         :choice    choice
         :accepted  accepted
-        :n         (inc n)
-        :n-all     (if accepted? (inc n-all) n-all)
-        :n-occured (if accepted? (+ n-occured accepted) n-occured)
-        :p         (float (if (zero? n-all) 0 (/ n-occured n-all))))))
+        :n         n
+        :n-all     n-all
+        :n-occured n-occured
+        :p         p)))
 
 (defn run!
   [simulation]
