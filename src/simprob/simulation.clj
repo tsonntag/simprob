@@ -46,17 +46,16 @@
 
 (defn run!
   [simulation]
-  (println "RUN!")
   (while (running? simulation)
-    (println "RUN while")
+    (Thread/sleep 1)
     (step! simulation)))
 
 (defn toggle!
   "toggle start/stop for simulation"
   [{:keys [state] :as simulation}]
   (swap! state assoc :running (not (running? simulation)))
-  (println "TOGGLE" (running? simulation) state)
   (when (running? simulation)
-    (println "START")
-    (run! simulation)))
+    (future (run! simulation)
+            (println "END FUTURE")
+            )))
 

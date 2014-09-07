@@ -40,7 +40,3 @@
         {:frame f :simulation simulation}))
 
 (defn show [app] (-> (:frame app) pack! show!))
-
-(defn run [{:keys [simulation]}]
-  (future (simulation/run! simulation)))
-  ;(simulation/run! simulation))
