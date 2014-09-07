@@ -55,7 +55,5 @@
   [{:keys [state] :as simulation}]
   (swap! state assoc :running (not (running? simulation)))
   (when (running? simulation)
-    (future (run! simulation)
-            (println "END FUTURE")
-            )))
+    (future (run! simulation))))
 

@@ -12,21 +12,20 @@
   [simulation title items]
   (let [state        (:state simulation)
         f            (frame :title title :on-close :exit)
-        init-btn     (make-button "Reset" (fn [_] (simulation/init!   simulation)))
-        step-btn     (make-button "Step"  (fn [_] (simulation/step!   simulation)))
+        init-btn     (make-button "Neu" (fn [_] (simulation/init!   simulation)))
+        step-btn     (make-button "Zug"   (fn [_] (simulation/step!   simulation)))
         run-btn      (make-button "Start" (fn [_] (simulation/toggle! simulation)))
         labels       {:n (label) :n-all (label) :n-occured (label) :p (label)}
-        result-panel (grid-panel :rows 4 :columns 2
-                                 :items [(label "Step:")  (:n         labels)
-                                         (label "Event")  (:n-occured labels)
-                                         (label "Valid:") (:n-all     labels)
-                                         (label "p:")     (:p         labels)])
+        result-panel (grid-panel :columns 2
+                                 :items [(label "Zug:")         (:n         labels)
+                                         (label "Akzeptiert:")  (:n-occured labels)
+                                         (label "Von")          (:n-all     labels)
+                                         (label "p:")           (:p         labels)])
         main-panel (border-panel :vgap 5 :hgap 5 :border 5
-                                 :west (flow-panel   :vgap 5 :hgap 5 :border 5 :items items)
-                                 :east (border-panel :vgap 5 :hgap 5 :border 5
-                                                     :north (flow-panel
-                                                              :items [step-btn run-btn init-btn])
-                                                     :center result-panel))
+                                 :west (flow-panel :vgap 5 :hgap 5 :border 5 :items items)
+                                 :east (vertical-panel
+                                         :items [(flow-panel :items [run-btn step-btn init-btn])
+                                                 result-panel]))
         ]
         (add-watch
           state :widget
