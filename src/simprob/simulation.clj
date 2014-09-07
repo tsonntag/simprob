@@ -1,33 +1,28 @@
 (ns simprob.simulation)
 
+(def initial-state {:running false
+                    :n 0
+                    :n-all 0
+                    :n-occured 0
+                    :p 0.0})
 (defn create
   "creates a simulation"
   [chooser listener]
-  (let [state (atom
-                { :running false
-                  :n 0
-                  :n-all 0
-                  :n-occured 0
-                  :p 0.0})]
-   (add-watch state :listener (fn [_ _ _ state] (listener state)))
-   {:state state
-    :chooser chooser
-    :listener listener}))
+  (let [state (atom initial-state)]
+    (add-watch state :listener (fn [_ _ old state] (listener state)))
+    {:state state
+     :chooser chooser
+     :listener listener}))
    
 (defn running?
   "returns true if running"
-  [{:keys [state]} &args]
-  (:running state))
+  [{:keys [state]}]
+  (:running @state))
 
-(defn start!
-  "starts a simulation"
-  [{:keys [state]} &args]
-  (swap! state :runnign true))
-
-(defn stop!
-  "stops a simulation"
-  [{:keys [state]} &args]
-  (swap! state :runnign false))
+(defn init!
+  "inits state of simulation"
+  [{:keys [state]}]
+  (reset! state initial-state))
 
 (defn step!
   "Performs a simulation step:
@@ -51,5 +46,17 @@
 
 (defn run!
   [simulation]
+  (println "RUN!")
   (while (running? simulation)
-     (step! simulation)))
+    (println "RUN while")
+    (step! simulation)))
+
+(defn toggle!
+  "toggle start/stop for simulation"
+  [{:keys [state] :as simulation}]
+  (swap! state assoc :running (not (running? simulation)))
+  (println "TOGGLE" (running? simulation) state)
+  (when (running? simulation)
+    (println "START")
+    (run! simulation)))
+
