@@ -5,6 +5,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [seesaw "1.4.4"]]
-  ;:main simprob.core
-  ;:aot [simprob.core])
-  )
+  :main simprob.ry.gui
+  :aot [simprob.ry.gui])

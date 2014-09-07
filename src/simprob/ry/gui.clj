@@ -1,14 +1,17 @@
 (ns simprob.ry.gui
   (require
     [seesaw.core :refer :all]
+    [seesaw.font :refer :all]
     [simprob.simulation :as simulation]
     [simprob.gui :as gui]
-    [simprob.ry.core :as ry]))
+    [simprob.ry.core :as ry])
+  (gen-class))
 
 (defn run []
   (let [bg        (config (label) :background)
-        left      (label :text "        " :background bg :bounds [:* :* 10 20])
-        right     (label :text "        " :background bg :bounds [:* :* 10 20])
+        font      (font :size 18)
+        left      (label :font font :text "        " :background bg :bounds [:* :* 100 200])
+        right     (label :font font :text "        " :background bg :bounds [:* :* 100 200])
         pad       (vertical-panel :items [left right])
         listener   (fn [{:keys [choice] :as state}]
                      #_(config! label :text
@@ -26,7 +29,10 @@
         simulation (simulation/create
                      (ry/chooser :yellow)
                      listener)
-        title      "Rot Gelb"
+        title      "Das Sockenexperiment"
         app        (gui/create 
                      simulation title [pad])]
     (gui/show app)))
+
+(defn -main [& args]
+  (run))
